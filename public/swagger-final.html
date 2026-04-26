@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Products API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="/docs/asset/swagger-ui.css">
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="/docs/asset/swagger-ui-bundle.js"></script>
+<script src="/docs/asset/swagger-ui-standalone-preset.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ui = SwaggerUIBundle({
+        url: "/docs/api-docs.json",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+        ],
+        plugins: [
+            SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout",
+        docExpansion: "none",  // none, list, full
+        filter: true,
+        tryItOutEnabled: true,
+        displayRequestDuration: true,
+        operationsSorter: "alpha",
+        tagsSorter: "alpha",
+    });
+    window.ui = ui;
+});
+</script>
+</body>
+</html>

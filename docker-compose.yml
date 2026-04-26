@@ -1,61 +1,89 @@
 version: '3.8'
 
 services:
+  # PHP Application
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: products_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/custom.ini
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - products_network
+
+  # Nginx Web Server
   nginx:
     image: nginx:alpine
+    container_name: products_nginx
+    restart: unless-stopped
     ports:
       - "8080:80"
     volumes:
-      - ./src:/var/www/html
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - php
-      - mysql
+      - app
     networks:
-      - app-network
+      - products_network
 
-  php:
-    build:
-      context: ./docker/php
-      dockerfile: Dockerfile
-    volumes:
-      - ./src:/var/www/html
-    ports:
-      - "9000:9000"
-    depends_on:
-      - mysql
-    networks:
-      - app-network
-
+  # MySQL Database
   mysql:
     image: mysql:8.0
+    container_name: products_mysql
+    restart: unless-stopped
     environment:
       MYSQL_DATABASE: products_db
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root_password
       MYSQL_USER: app_user
+      MYSQL_PASSWORD: secret
+    command: 
+      - --default-time-zone=Europe/Moscow
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
     networks:
-      - app-network
-
+      - products_network
+  # phpMyAdmin
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: products_phpmyadmin
+    restart: unless-stopped
     ports:
       - "8081:80"
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+      PMA_ARBITRARY: 1
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
-      - app-network
+      - products_network
+
+networks:
+  products_network:
+    driver: bridge
 
 volumes:
   mysql_data:
-
-networks:
-  app-network:
-    driver: bridge
+    driver: local

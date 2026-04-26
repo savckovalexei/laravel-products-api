@@ -59,6 +59,10 @@ API для управления товарами с поддержкой фил�
 
 `docker-compose exec app php artisan l5-swagger:generate`
 
+Скопировать в public для доступа через веб
+
+`docker-compose exec app cp storage/api-docs/api-docs.json public/docs.json`
+
 #### 5. Доступ к приложению
 
 API: http://localhost:8080/api/products
@@ -132,6 +136,12 @@ DB_PASSWORD=your_password
 #### 5. Генерация Swagger документации
 
 `php artisan l5-swagger:generate`
+
+Скопировать в public для доступа через веб
+
+`cp storage/api-docs/api-docs.json public/docs.json`
+
+`http://localhost:8080/docs/api-docs.json`
 
 #### 6. Запуск сервера
 

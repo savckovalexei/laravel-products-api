@@ -28,7 +28,9 @@ class ProductFilter implements FilterInterface
 
         // Фильтр по наличию
         if (isset($filters['in_stock'])) {
-            $query->where('in_stock', filter_var($filters['in_stock'], FILTER_VALIDATE_BOOLEAN));
+            $filters['in_stock'] = (bool) $filters['in_stock'];
+            $query->where('in_stock', $filters['in_stock']);
+          
         }
 
         // Фильтр по рейтингу

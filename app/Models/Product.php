@@ -17,12 +17,14 @@ class Product extends Model
         'price' => 'decimal:2',
         'in_stock' => 'boolean',
         'rating' => 'float',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+
+    
 }

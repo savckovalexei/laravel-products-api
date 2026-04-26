@@ -1,0 +1,298 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Products API",
+        "description": "API для работы с товарами. Поддерживает фильтрацию, поиск, сортировку и пагинацию.",
+        "contact": {
+            "name": "Support",
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Получить список товаров",
+                "description": "Возвращает список товаров с возможностью фильтрации, поиска, сортировки и пагинации",
+                "operationId": "getProductsList",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Поиск по названию товара (подстрока)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 255
+                        },
+                        "example": "iPhone"
+                    },
+                    {
+                        "name": "price_from",
+                        "in": "query",
+                        "description": "Минимальная цена",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        },
+                        "example": 1000
+                    },
+                    {
+                        "name": "price_to",
+                        "in": "query",
+                        "description": "Максимальная цена",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0
+                        },
+                        "example": 50000
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "ID категории товара",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "in_stock",
+                        "in": "query",
+                        "description": "Наличие на складе (1 или 0, true или false)",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "rating_from",
+                        "in": "query",
+                        "description": "Минимальный рейтинг (от 0 до 5)",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "maximum": 5,
+                            "minimum": 0
+                        },
+                        "example": 4
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Сортировка товаров",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "newest",
+                            "enum": [
+                                "price_asc",
+                                "price_desc",
+                                "rating_desc",
+                                "newest"
+                            ]
+                        },
+                        "example": "price_asc"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Количество товаров на странице (макс 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        },
+                        "example": 15
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Product": {
+                "description": "Модель товара",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "iPhone 15 Pro Max"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 99999.99
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "in_stock": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "rating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.8
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01 12:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01 12:00:00"
+                    },
+                    "category": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Электроника"
+                            },
+                            "description": {
+                                "type": "string",
+                                "example": "Все что связано с электроникой"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ProductsResponse": {
+                "description": "Ответ с пагинацией",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Product"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "last_page": {
+                        "type": "integer",
+                        "example": 10
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "example": 15
+                    },
+                    "total": {
+                        "type": "integer",
+                        "example": 150
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationError": {
+                "description": "Ошибка валидации",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Validation errors"
+                    },
+                    "errors": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Products",
+            "description": "API endpoints для работы с товарами"
+        }
+    ]
+}

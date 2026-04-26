@@ -17,3 +17,13 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/public/docs.json
+/storage/api-docs/
+curl
+docker-compose
+.bash_history
+.composer/
+public/vendor/
+public/docs/asset/
+public/api-docs.json
+storage/api-docs/

@@ -1,5 +1,7 @@
 <?php
-
+if (isset($_GET['in_stock']) && $_GET['in_stock'] === 'true') {
+    error_log('=== DEBUG: in_stock=true detected in index.php ===');
+}
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 

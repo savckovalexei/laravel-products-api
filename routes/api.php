@@ -14,4 +14,14 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+Route::get('/test', function() {
+    \Log::info('Test route works');
+    return response()->json(['test' => true]);
+});
+
+Route::any('/{any}', function($any) {
+    \Log::info('Catch-all route reached: ' . $any);
+    return response()->json(['path' => $any, 'params' => request()->all()]);
+})->where('any', '.*');
